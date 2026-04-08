@@ -1,0 +1,80 @@
+name: CustomerSupportEnv
+version: "0.1.0"
+description: "Autonomous SaaS customer support environment with KB, order-status, refund, and escalation workflows."
+type: space
+runtime: fastapi
+app: env.environment:app
+port: 8000
+action: Action
+observation: Observation
+action_space:
+  type: object
+  fields:
+    action_type:
+      type: string
+      enum:
+        - reply_to_user
+        - query_kb
+        - check_order_status
+        - issue_refund
+        - escalate
+    message:
+      type: string
+      required: false
+    query:
+      type: string
+      required: false
+    order_id:
+      type: string
+      required: false
+    refund_amount:
+      type: number
+      required: false
+    refund_reason:
+      type: string
+      required: false
+    escalation_note:
+      type: string
+      required: false
+    reasoning:
+      type: string
+      required: true
+observation_space:
+  type: object
+  fields:
+    ticket_id:
+      type: string
+    task_id:
+      type: string
+    user_message:
+      type: string
+    conversation_history:
+      type: array
+    available_tools:
+      type: array
+    customer_metadata:
+      type: object
+    last_tool_result:
+      type: object
+      required: false
+    step_count:
+      type: integer
+    max_steps:
+      type: integer
+    done:
+      type: boolean
+    ticket_status:
+      type: string
+tasks:
+  - id: easy_faq_plan_switch
+    module: tasks.task_easy
+    difficulty: easy
+    description: "FAQ resolution grounded in the knowledge base."
+  - id: medium_order_delay
+    module: tasks.task_medium
+    difficulty: medium
+    description: "Order delay investigation using the order database."
+  - id: hard_refund_exception
+    module: tasks.task_hard
+    difficulty: hard
+    description: "Refund dispute outside policy requiring refund-system check and escalation."
